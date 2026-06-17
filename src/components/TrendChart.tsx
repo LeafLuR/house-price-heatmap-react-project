@@ -62,7 +62,12 @@ export default function TrendChart({ entries, months, houseType, focusCities, cu
 
   useEffect(() => {
     const instance = instanceRef.current
-    if (!instance || series.length === 0) return
+    if (!instance) return
+
+    if (series.length === 0) {
+      instance.clear()
+      return
+    }
 
     instance.setOption({
       tooltip: {
@@ -93,7 +98,7 @@ export default function TrendChart({ entries, months, houseType, focusCities, cu
         splitLine: { lineStyle: { type: 'dashed', color: '#eee' } },
       },
       series,
-    })
+    }, { notMerge: true })
   }, [series, months, focusCities, currentMonth])
 
   return <div ref={chartRef} style={{ width: '100%', height: 240 }} />

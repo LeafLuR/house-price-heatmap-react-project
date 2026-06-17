@@ -21,7 +21,16 @@ export default function App() {
   const [monthIdx, setMonthIdx] = useState(0)
   const [houseType, setHouseType] = useState<HouseType>('new_house')
   const [metric, setMetric] = useState<Metric>('环比')
-  const [focusCities, setFocusCities] = useState<string[]>(['杭州', '大连', '哈尔滨', '厦门'])
+  const [focusCities, setFocusCities] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('heatmap-focus-cities')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed
+      }
+    } catch { /* ignore */ }
+    return ['杭州', '大连', '哈尔滨', '厦门']
+  })
   const [isPlaying, setIsPlaying] = useState(false)
   const [mapFocusCity, setMapFocusCity] = useState<string | null>(null)
   const playRef = useRef<number | null>(null)
@@ -55,6 +64,11 @@ export default function App() {
         setLoading(false)
       })
   }, [])
+
+  // 关注城市持久化到 localStorage
+  useEffect(() => {
+    localStorage.setItem('heatmap-focus-cities', JSON.stringify(focusCities))
+  }, [focusCities])
 
   // Play timer
   useEffect(() => {
